@@ -1,13 +1,13 @@
-const {api,createDefaultActionsFor} = require("../utils/api.util")
+const {api,createDefaultModelFor} = require("../utils/api.util")
+const collection = "users"
 
 module.exports = {
-    ...createDefaultActionsFor("users"),
-    getByEmailAndPassword: async (email, password) => await api.get(`/users?q=${JSON.stringify({email, password})}`), 
-    create: async (user) => await api.post("/users",{
-        ...user,
-        active: true
-    }), 
-    update: () => {
-
-    },
+    ...createDefaultModelFor(collection),
+    getByEmailAndPassword: async (email, password) => {
+        try {
+            return await api.get(`/${collection}?q=${JSON.stringify({email, password})}`)
+        } catch(e) {
+            return {status: e.response.status, error: e.response.statusText}
+        }
+    }
 }
