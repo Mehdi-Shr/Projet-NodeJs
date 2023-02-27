@@ -1,13 +1,10 @@
-const {api,createDefaultModelFor} = require("../utils/api.util")
-const collection = "users"
+const {api,createModelFor} = require("./index");
 
-module.exports = {
-    ...createDefaultModelFor(collection),
-    getByEmailAndPassword: async (email, password) => {
-        try {
-            return await api.get(`/${collection}?q=${JSON.stringify({email, password})}`)
-        } catch(e) {
-            return {status: e.response.status, error: e.response.statusText}
+const collection = "users"
+module.exports = createModelFor("users",
+    {
+        getByEmailAndPassword: async (email, password) => {
+            const {data} = await api.get(`/${collection}?q=${JSON.stringify({email, password})}`)
+            return data[0]
         }
-    }
-}
+    })

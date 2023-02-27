@@ -1,3 +1,3 @@
-const {api,createDefaultModelFor} = require("../utils/api.util")
+const {createModelFor} = require("./index");
 
-module.exports = createDefaultModelFor("products")
+module.exports = createModelFor`products`

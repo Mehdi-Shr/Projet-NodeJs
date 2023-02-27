@@ -1,28 +1,29 @@
 const express = require('express')
 const router = new express.Router()
-const userCtrl = require('./routes/usersCtrl')
-const productCtrl = require('./routes/productCrtl')
+
+const userActions = require("./routes/userActions");
+const productActions = require("./routes/productActions");
+const imageActions = require("./routes/imageActions");
 
 const {middlewareAuthentication} = require("./utils/jwt.util")
+const {middlewareUploadImages} = require("./utils/upload.util");
 
 // Route which allows user to login and get a JWT token 
-router.post("/users/login",userCtrl.login)
-
-// Routes who allows to READ, CREATE, UPDATE AND DELETE users (We need to give a JWT token with cookie to access to these routes)
-// router.get("/users",middlewareAuthentication,userCtrl.getAll)
-// router.get("/users/:id",middlewareAuthentication,userCtrl.get)
-// router.delete("/users/:id",middlewareAuthentication,userCtrl.delete)
-// router.patch("/users/:id",middlewareAuthentication,userCtrl.update)
-
-// Route to REGISTER a user
-router.post("/users/register",userCtrl.register)
+router.post("/user/login",userActions.login)
+router.post("/user/register",userActions.register)
+router.get("/user",middlewareAuthentication,userActions.get)
+router.patch("/user",middlewareAuthentication,userActions.updateInformations)
+router.patch("/user/password",middlewareAuthentication,userActions.updatePassword)
 
 // CRUD routes for products collection (We need to give a JWT token with cookie to access to DELETE, CREATE AND UPDATE products)
-router.get("/products",productCtrl.getAll) // TO GET a product
-router.get("/products/:id",productCtrl.get) // To GET the product list
-router.delete("/products/:id",middlewareAuthentication,productCtrl.delete) // To DELETE a product
-router.patch("/products/:id",middlewareAuthentication,productCtrl.update) // To UPDATE a product
-router.post("/products",middlewareAuthentication,productCtrl.create) // To CREATE a product
+router.get("/products",productActions.getAll) // TO GET a product
+router.get("/products/:id",productActions.get) // To GET the product list
+router.delete("/products/:id",middlewareAuthentication,productActions.delete) // To DELETE a product
+router.patch("/products/:id",middlewareAuthentication,productActions.update) // To UPDATE a product
+router.post("/products",[middlewareAuthentication, middlewareUploadImages],productActions.create) // To CREATE a product
+
+// GET an image
+router.get('/images/:name',imageActions.get)
 
 module.exports = {
     router

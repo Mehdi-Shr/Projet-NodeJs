@@ -1,4 +1,4 @@
-const {Strategy} = require('passport-jwt')
+const {Strategy, ExtractJwt} = require('passport-jwt')
 const passport = require('passport')
 const jwt = require("jsonwebtoken")
 const userModel = require("../models/user")
@@ -6,23 +6,19 @@ const {Buffer} = require("node:buffer")
 
 const secret = process.env.SECRET_TOKEN
 
-const getToken = (req) => {
-    let token = null
-    if(req && req.cookies) token = req.cookies['token'];
-    return token;
-}
 passport.use(new Strategy(
     {
-        jwtFromRequest: getToken,
+        jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
         secretOrKey: secret,
     },
     async (jwt_payload,done) => {
         if(jwt_payload.id){
-            const repsonseApi = await userModel.get(jwt_payload.id)
-            if(repsonseApi.status === 200){
-                return done(null, repsonseApi.data)
+            try {
+                const user = await userModel.get(jwt_payload.id)
+                return done(null, user)
+            } catch(e) {
+                return done(null,false)
             }
-            return done(null,false)
         }
         return done(null,false)
     }
@@ -34,10 +30,12 @@ module.exports = {
     },
     middlewareAuthentication: passport.authenticate("jwt",{session: false}),
     getPayload: (req) => {
-        const token = getToken(req)
+        const token = (ExtractJwt.fromAuthHeaderAsBearerToken())(req)
         if(token){
             const [header,payload,signature] = token.split(".")
-            return JSON.parse((new Buffer(payload, 'base64')).toString('ascii'))
+            const buffer = new Buffer.from(payload, 'base64')
+            console.log(buffer.toString())
+            return JSON.parse(buffer.toString())
         }
         return null
     }

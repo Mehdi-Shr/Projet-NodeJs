@@ -12,11 +12,14 @@ const cors = require("cors")
 const port = parseInt(process.env.PORT,10)
 
 app.use(bodyParser.urlencoded({extended: true}))
-app.use(bodyParser.json())
+app.use(bodyParser.json({extended: true}))
 app.use(cookieParser())
 app.use(cors())
 
 
+app.get('/',(req,res) => {
+    res.send("Bienvenue sur l'api REST du comparateur de produits")
+})
 
 app.use(router)
 
