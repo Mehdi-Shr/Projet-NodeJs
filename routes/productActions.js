@@ -26,8 +26,8 @@ module.exports = {
     async update(req, res) {
         const {id} = req.params
         if (id) {
-            const {marque, volume, type, prix, source, description, typeBouchon, image, logoMarque} = req.body
-            if (marque || volume || type || prix || source || description || typeBouchon || image || logoMarque) {
+            const {marque, volume, type, prix, source, description, typeBouchon, image, logoMarque, qualite} = req.body
+            if (marque || volume || type || prix || source || description || typeBouchon || image || logoMarque || qualite) {
                 try {
                     const newProduct = await productModel.update(id, {
                         marque,
@@ -38,7 +38,8 @@ module.exports = {
                         description,
                         typeBouchon,
                         image,
-                        logoMarque
+                        logoMarque,
+                        qualite
                     })
                     return res.json(newProduct)
                 } catch (e) {
@@ -51,9 +52,9 @@ module.exports = {
 
     },
     async create(req, res) {
-        const {marque, volume, type, prix, source, description, typeBouchon, image, logoMarque} = req.body
+        const {marque, volume, type, prix, source, description, typeBouchon, image, logoMarque,qualite} = req.body
 
-        if (marque && volume && type && prix && source && description && typeBouchon && image) {
+        if (marque && volume && type && prix && source && description && typeBouchon && image && qualite) {
             try {
                 const newProduct = await productModel.create({
                     marque,
@@ -64,7 +65,8 @@ module.exports = {
                     source,
                     logoMarque,
                     description,
-                    typeBouchon
+                    typeBouchon,
+                    qualite
                 })
                 return res.json(newProduct)
             } catch (e) {
